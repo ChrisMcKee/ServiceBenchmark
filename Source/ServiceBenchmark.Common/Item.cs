@@ -4,21 +4,21 @@
 
 	public class Item
 	{
-		public Item(Guid itemID, string description)
+		public Item(Guid itemId, string description)
 		{
-			this.ItemID = itemID;
-			this.Description = description;
-			this.ModifiedAt = DateTime.UtcNow;
+			ItemId = itemId;
+			Description = description;
+			ModifiedAt = DateTime.UtcNow;
 		}
 
-		public Guid ItemID { get; set; }
+		public Guid ItemId { get; set; }
 		public string Description { get; set; }
 		public DateTime ModifiedAt { get; set; }
 	}
 
 	public class ItemRequest
 	{
-		public Guid ItemID { get; set; }
+		public Guid ItemId { get; set; }
 	}
 
 	public class ItemResponse
