@@ -3,11 +3,9 @@ namespace ServiceBenchmark.SvcStack
 	using ServiceBenchmark.Common;
 	using ServiceStack.ServiceInterface;
 
-	#region Item Service
-
 	public class ItemService : Service
 	{
-		public object Any(ItemRequest request)
+		public object Get(ItemRequest request)
 		{
 			return new ItemResponse
 				       {
@@ -15,6 +13,4 @@ namespace ServiceBenchmark.SvcStack
 				       };
 		}
 	}
-
-	#endregion
 }

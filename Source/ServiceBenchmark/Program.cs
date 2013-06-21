@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.Diagnostics;
+	using System.Globalization;
 	using System.Net.Http;
 	using System.Net.Http.Headers;
 	using ServiceBenchmark.Common;
@@ -9,9 +10,9 @@
 
 	internal class Program
 	{
-		private static readonly int _numberOfRequestsToSend = 10000;
+		private const int NumberOfRequestsToSend = 10000;
 
-		private static void Main(string[] args)
+		private static void Main()
 		{
 			Console.WriteLine("Press any key to start . . .");
 			Console.ReadKey();
@@ -41,22 +42,15 @@
 			Console.WriteLine("ServiceStack");
 			Console.WriteLine("------------------------------------------------------------");
 
-			var client = new JsonServiceClient();
-			client.BaseUri = new Uri("http://localhost:16227/").AbsoluteUri;
+			var client = new JsonServiceClient {BaseUri = new Uri("http://localhost:16227/").AbsoluteUri};
 
-			ExecuteAction(_numberOfRequestsToSend.ToString() + " requests to item/id", () =>
+			ExecuteAction(NumberOfRequestsToSend.ToString(CultureInfo.InvariantCulture) + " requests to item/id", () =>
 				                                                                           {
-					                                                                           for (int i = 0;
-					                                                                                i < _numberOfRequestsToSend;
-					                                                                                i++)
+					                                                                           for (int i = 0;i < NumberOfRequestsToSend; i++)
 					                                                                           {
-						                                                                           var response =
-							                                                                           client.Get<ItemResponse>("item/" +
-							                                                                                                    Guid.NewGuid());
+						                                                                           var response = client.Get<ItemResponse>("item/" + Guid.NewGuid());
 						                                                                           if (response.Item == null)
-							                                                                           throw new Exception(
-								                                                                           "Item not received.");
-						                                                                           //Console.WriteLine("ItemID\t\t{0}\nDescription\t{1}\nModifiedAt\t{2}", response.Item.ItemID, response.Item.Description, response.Item.ModifiedAt);
+							                                                                           throw new Exception("Item not received.");
 					                                                                           }
 				                                                                           });
 		}
@@ -68,42 +62,26 @@
 			Console.WriteLine("Web API");
 			Console.WriteLine("------------------------------------------------------------");
 
-			var client = new HttpClient();
-			client.BaseAddress = new Uri("http://localhost:14851/");
+			var client = new HttpClient {BaseAddress = new Uri("http://localhost:14851/")};
 
-			client.DefaultRequestHeaders.Accept.Add(
-				new MediaTypeWithQualityHeaderValue("application/json"));
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-			ExecuteAction(_numberOfRequestsToSend.ToString() + " requests to api/item/id", () =>
+			ExecuteAction(NumberOfRequestsToSend.ToString(CultureInfo.InvariantCulture) + " requests to api/item/id", () =>
 				                                                                               {
-					                                                                               for (int i = 0;
-					                                                                                    i < _numberOfRequestsToSend;
-					                                                                                    i++)
+					                                                                               for (int i = 0; i < NumberOfRequestsToSend; i++)
 					                                                                               {
-						                                                                               var response =
-							                                                                               client.GetAsync("api/item/" +
-							                                                                                               Guid.NewGuid()
-							                                                                                                   .ToString())
-							                                                                                     .Result;
+						                                                                               var response = client.GetAsync("api/item/" + Guid.NewGuid()).Result;
 						                                                                               if (response.IsSuccessStatusCode)
 						                                                                               {
-							                                                                               var item =
-								                                                                               response.Content
-								                                                                                       .ReadAsAsync<Item>()
-								                                                                                       .Result;
+							                                                                               var item = response.Content.ReadAsAsync<Item>().Result;
 							                                                                               if (item == null)
-								                                                                               throw new Exception(
-									                                                                               "Item not received.");
-							                                                                               //Console.WriteLine("ItemID\t\t{0}\nDescription\t{1}\nModifiedAt\t{2}", item.ItemID, item.Description, item.ModifiedAt);
+																										   {
+								                                                                               throw new Exception("Item not received.");
+																										   }
 						                                                                               }
 						                                                                               else
 						                                                                               {
-							                                                                               Console.WriteLine("{0} ({1})",
-							                                                                                                 (int)
-							                                                                                                 response
-								                                                                                                 .StatusCode,
-							                                                                                                 response
-								                                                                                                 .ReasonPhrase);
+							                                                                               Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
 						                                                                               }
 					                                                                               }
 				                                                                               });
